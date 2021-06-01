@@ -2,9 +2,6 @@ const canvas = document.getElementById('main-canvas');
 canvas.width = 800;
 canvas.height = 450;
 
-canvas.style.width = canvas.width;
-canvas.style.height = canvas.height;
-
 const ctx = canvas.getContext('2d');
 
 const image = new Image();
@@ -31,8 +28,9 @@ class Particle {
     update() {
         this.y += (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
 
-        if (this.y >= canvas.height) {
-            this.y = 0;
+        // calculate direction and set respawn point accordingly
+        if (this.isOOB()) {
+            this.y = Math.random() * canvas.height;
             this.x = Math.random() * canvas.width;
         }
     }
@@ -44,8 +42,14 @@ class Particle {
         ctx.fill();
     }
 
+    isOOB() {
+        return (this.x < 0 || this.x >= canvas.width) || (this.y < 0 || this.y >= canvas.height);
+    }
+
     getColour() {
+
         const pixel = pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)];
+        
         const rmod = parseInt(redSlider.value) / 100;
         const gmod = parseInt(greenSlider.value) / 100;
         const bmod = parseInt(blueSlider.value) / 100;
