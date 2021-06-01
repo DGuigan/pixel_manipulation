@@ -8,26 +8,26 @@ canvas.style.height = canvas.height;
 const ctx = canvas.getContext('2d');
 
 const image = new Image();
-image.src = './images/bag.jpg';
+image.src = './images/hand.jpg';
 
-let pixelGrid = [];
+let pixelDataGrid = [];
 
-let particleCount = 5000;
+let particleCount = 10000;
 let particleArray = [];
 
 class Particle {
     constructor() {
         this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.speed = 1;
+        this.y = 0;
         this.size = Math.random() * 1.5 + 1;
     }
 
     update() {
-        this.y += this.speed;
+        this.y += (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * 13;
 
         if (this.y >= canvas.height) {
             this.y = 0;
+            this.x = Math.random() * canvas.width;
         }
     }
 
@@ -39,9 +39,9 @@ class Particle {
     }
 }
 
-loadImage = () => {
+loadImage = (callback) => {
     ctx.drawImage(image, 0, 0);
-    pixelGrid = [];
+    pixelDataGrid = [];
     const pixelArray = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
     for (let y = 0; y < canvas.height; y++) {
         row = [];
@@ -50,28 +50,31 @@ loadImage = () => {
             const green = pixelArray[(y * 4 * canvas.width) + (x * 4 + 1)];
             const blue = pixelArray[(y * 4 * canvas.width) + (x * 4 + 2)];
             const alpha = pixelArray[(y * 4 * canvas.width) + (x * 4 + 3)];
-            const bright = (red + green + blue) / 765;
+            const brightness = (red + green + blue) / 765;
 
             const cell = {
-                r: red, g: green, b: blue, a: alpha, brightness: bright
+                r: red, g: green, b: blue, a: alpha, brt: brightness
             };
 
             row.push(cell);
         }
-        pixelGrid.push(row);
+        pixelDataGrid.push(row);
     }
+    callback();
 }
 
-createParticles = () => {
+createParticles = (callback) => {
     for (let i = 0; i < particleCount; i++) {
         particleArray.push(new Particle());
     }
+    callback();
 }
 
 animateParticles = () => {
-    ctx.drawImage(image, 0, 0);
+    // repeatedly drawing transparent rectangle gives illusion of trails
     ctx.globalAlpha = 0.05;
     ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.globalAlpha = 0.2;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (particle of particleArray) {
@@ -83,8 +86,9 @@ animateParticles = () => {
 
 image.addEventListener('load', () => {
     console.log(`loading image from ${image.src}`);
-    loadImage();
+    loadImage( () => {
+        createParticles( () => {
+            animateParticles()
+        })
+    })
 });
-
-createParticles();
-animateParticles();
