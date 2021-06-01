@@ -15,6 +15,8 @@ let pixelDataGrid = [];
 let particleCount = 10000;
 let particleArray = [];
 
+const speedSlider = document.getElementById('speed');
+
 class Particle {
     constructor() {
         this.x = Math.random() * canvas.width;
@@ -23,7 +25,7 @@ class Particle {
     }
 
     update() {
-        this.y += (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * 13;
+        this.y += (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
 
         if (this.y >= canvas.height) {
             this.y = 0;
