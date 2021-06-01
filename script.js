@@ -18,6 +18,8 @@ const redSlider = document.getElementById('red');
 const greenSlider = document.getElementById('green');
 const blueSlider = document.getElementById('blue');
 
+const angleSlider = document.getElementById('angle');
+
 class Particle {
     constructor() {
         this.x = Math.random() * canvas.width;
@@ -26,7 +28,11 @@ class Particle {
     }
 
     update() {
-        this.y += (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
+        const speed = (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
+        const radianAngle = (angleSlider.value * Math.PI) / 180;
+
+        this.y += speed * -Math.cos(radianAngle);
+        this.x += speed * Math.sin(radianAngle);
 
         // calculate direction and set respawn point accordingly
         if (this.isOOB()) {
