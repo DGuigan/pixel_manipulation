@@ -17,6 +17,12 @@ let particleArray = [];
 
 const speedSlider = document.getElementById('speed');
 
+const redSlider = document.getElementById('red');
+const greenSlider = document.getElementById('green');
+const blueSlider = document.getElementById('blue');
+const alphaSlider = document.getElementById('alpha');
+
+
 class Particle {
     constructor() {
         this.x = Math.random() * canvas.width;
@@ -35,7 +41,7 @@ class Particle {
 
     draw() {
         ctx.beginPath();
-        ctx.fillStyle = 'rgb(255, 255, 255)';
+        ctx.fillStyle = `rgba(${redSlider.value}, ${greenSlider.value}, ${blueSlider.value}, ${alphaSlider.value})`;
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
     }
