@@ -20,8 +20,6 @@ const speedSlider = document.getElementById('speed');
 const redSlider = document.getElementById('red');
 const greenSlider = document.getElementById('green');
 const blueSlider = document.getElementById('blue');
-const alphaSlider = document.getElementById('alpha');
-
 
 class Particle {
     constructor() {
@@ -41,9 +39,22 @@ class Particle {
 
     draw() {
         ctx.beginPath();
-        ctx.fillStyle = `rgba(${redSlider.value}, ${greenSlider.value}, ${blueSlider.value}, ${alphaSlider.value})`;
+        ctx.fillStyle = this.getColour();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
+    }
+
+    getColour() {
+        const pixel = pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)];
+        const rmod = parseInt(redSlider.value) / 100;
+        const gmod = parseInt(greenSlider.value) / 100;
+        const bmod = parseInt(blueSlider.value) / 100;
+
+        return `rgb(${this.calculateColourValue(pixel.r, rmod)}, ${this.calculateColourValue(pixel.g, gmod)}, ${this.calculateColourValue(pixel.b, bmod)})`;
+    }
+
+    calculateColourValue(original, mod, scale=255) {
+        return (original + (mod * (mod >= 0 ? scale - original : original)));
     }
 }
 
