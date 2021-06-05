@@ -13,12 +13,15 @@ let particleCount = 10000;
 let particleArray = [];
 
 const speedSlider = document.getElementById('speed');
+const freezeBtn = document.getElementById('freeze-btn');
 
 const redSlider = document.getElementById('red');
 const greenSlider = document.getElementById('green');
 const blueSlider = document.getElementById('blue');
+const resetColourBtn = document.getElementById('reset-colour-btn');
 
 const angleSlider = document.getElementById('angle');
+const resetAngleBtn = document.getElementById('reset-angle-btn');
 
 class Particle {
     constructor() {
@@ -112,6 +115,23 @@ animateParticles = () => {
     }
     requestAnimationFrame(animateParticles);
 }
+
+freezeBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    speedSlider.value = 0;
+});
+
+resetColourBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    redSlider.value = 0;
+    greenSlider.value = 0;
+    blueSlider.value = 0;
+});
+
+resetAngleBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    angleSlider.value = 180;
+});
 
 image.addEventListener('load', () => {
     console.log(`loading image from ${image.src}`);
