@@ -23,32 +23,53 @@ const resetColourBtn = document.getElementById('reset-colour-btn');
 const angleSlider = document.getElementById('angle');
 const resetAngleBtn = document.getElementById('reset-angle-btn');
 
+const linearBtn = document.getElementById('linear-btn');
+const circularBtn = document.getElementById('circular-btn');
+
+const circle = {
+    active: false,
+    x: Math.floor(canvas.width / 2),
+    y: Math.floor(canvas.height / 2),
+};
+
 class Particle {
     constructor() {
+        this.y = Math.random() * canvas.height;
         this.x = Math.random() * canvas.width;
-        this.y = 0;
         this.size = Math.random() * 1.5 + 1;
     }
 
     update() {
-        const speed = (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
-        const radianAngle = (angleSlider.value * Math.PI) / 180;
-
-        this.y += speed * -Math.cos(radianAngle);
-        this.x += speed * Math.sin(radianAngle);
-
-        // calculate direction and set respawn point accordingly
-        if (this.isOOB()) {
-            this.y = Math.random() * canvas.height;
-            this.x = Math.random() * canvas.width;
+        if (circle.active) {
+            [this.x, this.y] = this.circlePath();
         }
+        else {
+            // have to check for stray particles moved by circle mode
+            if (this.isOOB()) {
+                this.y = Math.random() * canvas.height;
+                this.x = Math.random() * canvas.width;
+            }
+            
+            const speed = (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
+            const radianAngle = (angleSlider.value * Math.PI) / 180;
+
+            this.y += speed * -Math.cos(radianAngle);
+            this.x += speed * Math.sin(radianAngle);
+
+            if (this.isOOB()) {
+                this.y = Math.random() * canvas.height;
+                this.x = Math.random() * canvas.width;
+            }
+        }  
     }
 
     draw() {
-        ctx.beginPath();
-        ctx.fillStyle = this.getColour();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+        if (!circle.active || (circle.active && !this.isOOB())){
+            ctx.beginPath();
+            ctx.fillStyle = this.getColour();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }  
     }
 
     isOOB() {
@@ -69,6 +90,29 @@ class Particle {
     calculateColourValue(original, mod, scale=255) {
         return (original + (mod * (mod >= 0 ? scale - original : original)));
     }
+
+    circlePath() {
+        const currentAngle = radToDeg(Math.atan2(this.y - circle.y, this.x - circle.x));
+        let newAngle;
+        try {
+            newAngle = degToRad((currentAngle + ((1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value)) % 360);
+        }
+        catch (error) {
+            newAngle = degToRad((currentAngle + (2 * speedSlider.value)) % 360);
+        }
+        const radius = Math.sqrt((circle.x - this.x)**2  + (circle.y - this.y)**2);
+        const newX = (radius * Math.cos(newAngle)) + circle.x;
+        const newY = (radius * Math.sin(newAngle)) + circle.y;
+        return [newX, newY];
+    }
+}
+
+degToRad = (deg) => {
+    return (deg * Math.PI) / 180;
+}
+
+radToDeg = (rad) => {
+    return (rad * 180) / Math.PI;
 }
 
 loadImage = (callback) => {
@@ -132,6 +176,20 @@ resetAngleBtn.addEventListener('click', (event) => {
     event.preventDefault();
     angleSlider.value = 180;
 });
+
+linearBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (circle.active) {
+        circle.active = false;
+    }
+})
+
+circularBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (!circle.active) {
+        circle.active = true;
+    }
+})
 
 image.addEventListener('load', () => {
     console.log(`loading image from ${image.src}`);

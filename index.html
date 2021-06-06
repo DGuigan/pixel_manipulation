@@ -3,6 +3,8 @@
 <head>
     <title>Pixel Manipulation</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Odibee+Sans&display=swap" rel="stylesheet">
 </head>
 <body>
     <canvas id="main-canvas"></canvas>
@@ -25,6 +27,10 @@
         <label for="angle">Angle:</label>
         <input id="angle" name="angle" type="range" value="180" min="0" max="360">
         <button id="reset-angle-btn">Reset</button>
+    </form>
+    <form id="mode-form">
+        <button id="linear-btn">Linear</button>
+        <button id="circular-btn">Circular</button>
     </form>
 
     <script src="script.js"></script>
