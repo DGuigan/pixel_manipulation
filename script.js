@@ -95,7 +95,7 @@ class Particle {
         const currentAngle = radToDeg(Math.atan2(this.y - circle.y, this.x - circle.x));
         let newAngle;
         try {
-            newAngle = degToRad((currentAngle + ((1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value)) % 360);
+            newAngle = degToRad((currentAngle + ((1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * (speedSlider.value / 2))) % 360);
         }
         catch (error) {
             newAngle = degToRad((currentAngle + (2 * speedSlider.value)) % 360);
