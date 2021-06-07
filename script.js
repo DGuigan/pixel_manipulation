@@ -10,10 +10,12 @@ canvasOffset = {
     height: (self.innerHeight - canvas.height) / 2,
 }
 
+invertSpeed = false;
+
 const ctx = canvas.getContext('2d');
 
 const image = new Image();
-image.src = './images/bag.jpg';
+image.src = './images/hand.jpg';
 
 let pixelDataGrid = [];
 
@@ -36,6 +38,8 @@ const resetSizeBtn = document.getElementById('reset-size-btn');
 
 const linearBtn = document.getElementById('linear-btn');
 const circularBtn = document.getElementById('circular-btn');
+
+const invertBtn = document.getElementById('invert-btn');
 
 const circle = {
     active: false,
@@ -64,7 +68,14 @@ class Particle {
                 this.x = Math.random() * canvas.width;
             }
             
-            const speed = (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
+            let speed;
+
+            if (invertSpeed) {
+                speed = (pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
+            }
+            else {
+                speed = (1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * speedSlider.value;
+            }
             const radianAngle = (angleSlider.value * Math.PI) / 180;
 
             this.y += speed * -Math.cos(radianAngle);
@@ -109,7 +120,12 @@ class Particle {
         const currentAngle = radToDeg(Math.atan2(this.y - circle.y, this.x - circle.x));
         let newAngle;
         try {
-            newAngle = degToRad((currentAngle + ((1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * (speedSlider.value / 2))) % 360);
+            if (invertSpeed) {
+                newAngle = degToRad((currentAngle + ((pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * (speedSlider.value / 2))) % 360);
+            }
+            else {
+                newAngle = degToRad((currentAngle + ((1 - pixelDataGrid[Math.floor(this.y)][Math.floor(this.x)].brt) * (speedSlider.value / 2))) % 360);
+            }
         }
         catch (error) {
             newAngle = degToRad((currentAngle + (2 * speedSlider.value)) % 360);
@@ -213,6 +229,11 @@ circularBtn.addEventListener('click', (event) => {
         circle.y = circle.trueY;
     }
 });
+
+invertBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    invertSpeed = !invertSpeed;
+})
 
 canvas.addEventListener('mousedown', (event) => {
     circle.down = true;
