@@ -23,6 +23,9 @@ const resetColourBtn = document.getElementById('reset-colour-btn');
 const angleSlider = document.getElementById('angle');
 const resetAngleBtn = document.getElementById('reset-angle-btn');
 
+const sizeSlider = document.getElementById('size');
+const resetSizeBtn = document.getElementById('reset-size-btn');
+
 const linearBtn = document.getElementById('linear-btn');
 const circularBtn = document.getElementById('circular-btn');
 
@@ -67,7 +70,7 @@ class Particle {
         if (!circle.active || (circle.active && !this.isOOB())){
             ctx.beginPath();
             ctx.fillStyle = this.getColour();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, this.size * (sizeSlider.value / 100), 0, Math.PI * 2);
             ctx.fill();
         }  
     }
@@ -176,6 +179,11 @@ resetAngleBtn.addEventListener('click', (event) => {
     event.preventDefault();
     angleSlider.value = 180;
 });
+
+resetSizeBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    sizeSlider.value = 100;
+})
 
 linearBtn.addEventListener('click', (event) => {
     event.preventDefault();
