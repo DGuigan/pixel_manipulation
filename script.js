@@ -2,10 +2,18 @@ const canvas = document.getElementById('main-canvas');
 canvas.width = 800;
 canvas.height = 450;
 
+canvas.style.width = canvas.width;
+canvas.style.height = canvas.height;
+
+canvasOffset = {
+    width: (self.innerWidth - canvas.width) / 2,
+    height: (self.innerHeight - canvas.height) / 2,
+}
+
 const ctx = canvas.getContext('2d');
 
 const image = new Image();
-image.src = './images/hand.jpg';
+image.src = './images/bag.jpg';
 
 let pixelDataGrid = [];
 
@@ -31,8 +39,11 @@ const circularBtn = document.getElementById('circular-btn');
 
 const circle = {
     active: false,
+    trueX: Math.floor(canvas.width / 2),
+    trueY: Math.floor(canvas.height / 2),
     x: Math.floor(canvas.width / 2),
     y: Math.floor(canvas.height / 2),
+    down: false,
 };
 
 class Particle {
@@ -183,21 +194,42 @@ resetAngleBtn.addEventListener('click', (event) => {
 resetSizeBtn.addEventListener('click', (event) => {
     event.preventDefault();
     sizeSlider.value = 100;
-})
+});
 
 linearBtn.addEventListener('click', (event) => {
     event.preventDefault();
     if (circle.active) {
         circle.active = false;
     }
-})
+});
 
 circularBtn.addEventListener('click', (event) => {
     event.preventDefault();
     if (!circle.active) {
         circle.active = true;
     }
-})
+    else {
+        circle.x = circle.trueX;
+        circle.y = circle.trueY;
+    }
+});
+
+canvas.addEventListener('mousedown', (event) => {
+    circle.down = true;
+    circle.x = event.x - canvasOffset.width;
+    circle.y = event.y - canvasOffset.height;
+}, true);
+
+canvas.addEventListener('mouseup', (event) => {
+    circle.down = false;
+}, true);
+
+canvas.addEventListener('mousemove', (event) => {
+    if (circle.down){
+        circle.x = event.x - canvasOffset.width;
+        circle.y = event.y - canvasOffset.height;
+    }
+}, true);
 
 image.addEventListener('load', () => {
     console.log(`loading image from ${image.src}`);
